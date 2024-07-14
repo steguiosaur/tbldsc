@@ -1,3 +1,9 @@
+# Preprocessing
+# - Filter syntax of HTML, Markdown, and LaTeX using regex
+# - Tokenization
+# - Case-folding (lowercase)
+
+
 import re
 from bs4 import BeautifulSoup
 
@@ -53,17 +59,21 @@ class Tokenizer:
         table_content = re.search(r"\\begin{tabular}.+?\\end{tabular}", text, re.DOTALL)
         if table_content is None:
             return []  # unable to find valid table content
-        table_text = table_content.group()
+        table_text = table_content.group(0)
 
         # split cells based on columns and rows
-        cells = re.findall(r"&([^&]+)", table_text)
+        cells = re.split(r"(?<=&)(?=[^&]*\\\\|$)", table_text)
+
+        # split cells based on columns and rows
         words = []
         for cell in cells:
             # split cells into words based on spaces
             cell_words = cell.strip().split()
             # filter LaTeX reserved words in text and convert to lowercase
             cell_words = [
-                word.lower() for word in cell_words if not word.startswith("\\")
+                word.lower()
+                for word in cell_words
+                if not (word.startswith("\\") or word == "&")
             ]
             words.extend(cell_words)
 
@@ -94,17 +104,21 @@ class Tokenizer:
 
 # # Example usage:
 # markdown_table = """
-# | Header 1 | Header 2 | Header 3 |
-# | -------- | -------- | -------- |
-# | Cell 1   | Cell 2   | Come here |
+# | Fruit    | Quantity |
+# |----------|----------|
+# | Apple    | 10       |
+# | Orange   | 5        |
+# | Banana   | 8        |
 # """
 #
 # latex_table = """
 # \\begin{tabular}{|c|c|}
 # \\hline
-# Some text here & Another text here \\\\
+# Fruit & Quantity \\\\
 # \\hline
-# Cell one & Cell two \\\\
+# Apple & 10 \\\\
+# Orange & 5 \\\\
+# Banana & 8 \\\\
 # \\hline
 # \\end{tabular}
 # """
@@ -112,12 +126,20 @@ class Tokenizer:
 # html_table = """
 # <table>
 #   <tr>
-#     <th>Header 1</th>
-#     <th>Header 2</th>
+#     <th>Fruit</th>
+#     <th>Quantity</th>
 #   </tr>
 #   <tr>
-#     <td>Cell 1</td>
-#     <td>Cell 2</td>
+#     <td>Apple</td>
+#     <td>10</td>
+#   </tr>
+#   <tr>
+#     <td>Orange</td>
+#     <td>5</td>
+#   </tr>
+#   <tr>
+#     <td>Banana</td>
+#     <td>8</td>
 #   </tr>
 # </table>
 # """
