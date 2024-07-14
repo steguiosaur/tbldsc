@@ -7,7 +7,7 @@ from customtkinter import (
     CTkFrame,
     CTkOptionMenu,
     CTkTextbox,
-    CTkRadioButton,
+    CTkCheckBox,
     set_appearance_mode,
     set_default_color_theme,
     set_widget_scaling,
@@ -56,16 +56,16 @@ class Main(Tk):
         self.button_reset.grid(row=2, column=4, padx=(0, 20), pady=20, sticky="")
 
         # import table button
-        self.radio_import = CTkRadioButton(
+        self.check_import = CTkCheckBox(
             self, text="Import table", command=self.button_callback
         )
-        self.radio_import.grid(row=3, column=4, padx=(0, 20), pady=(20, 10), sticky="")
+        self.check_import.grid(row=3, column=4, padx=(0, 20), pady=(20, 10), sticky="")
 
         # textual editor table button
-        self.radio_editor = CTkRadioButton(
+        self.check_editor = CTkCheckBox(
             self, height=10, text="Table editor", command=self.button_callback
         )
-        self.radio_editor.grid(row=4, column=4, padx=(0, 20), pady=(10, 20), sticky="")
+        self.check_editor.grid(row=4, column=4, padx=(0, 20), pady=(10, 20), sticky="")
 
         # go button
         self.button_start = CTkButton(
@@ -109,11 +109,11 @@ app.title("tbldsc")
 app.resizable(True, True)
 width = 1024
 height = 576
-x = (app.winfo_screenwidth() / 2) - width / 2
-y = (app.winfo_screenheight() / 2) - height / 2
+app.deiconify()
+x = (app.winfo_screenwidth() // 2) - width // 2
+y = (app.winfo_screenheight() // 2) - height // 2
 app.geometry("%dx%d+%d+%d" % (width, height, x, y))
 app.minsize(1024, 576)
 app.iconphoto(True, PhotoImage(file=Pathing.asset_path("tbldsc_white_logo.png")))
 app.show_splash_screen()
-app.deiconify()  # Show the main window after setup
 app.mainloop()
