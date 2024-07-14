@@ -1,4 +1,7 @@
+beautifulsoup4==4.12.3
+bs4==0.0.2
 customtkinter==5.2.2
 darkdetect==0.8.0
 packaging==24.1
 pillow==10.4.0
+soupsieve==2.5
