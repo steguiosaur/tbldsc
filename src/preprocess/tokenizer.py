@@ -102,6 +102,7 @@ class Tokenizer:
         return words
 
 
+#
 # # Example usage:
 # markdown_table = """
 # | Fruit    | Quantity |

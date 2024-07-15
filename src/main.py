@@ -7,12 +7,13 @@ from customtkinter import (
     CTkFrame,
     CTkOptionMenu,
     CTkTextbox,
-    CTkCheckBox,
     set_appearance_mode,
     set_default_color_theme,
     set_widget_scaling,
 )
 from utils.pathing import Pathing
+from preprocess.tokenizer import Tokenizer
+from models.modelselector import ModelSelector
 
 
 class Main(Tk):
@@ -25,14 +26,14 @@ class Main(Tk):
         self.grid_columnconfigure((0, 2), weight=1)
 
         # show an image or textbox depending on filetype selected as input
-        self.frame_input = CTkFrame(master=self, fg_color="#2e2e2e")
-        self.frame_input.grid(
+        self.textbox_input = CTkTextbox(self, fg_color="#2e2e2e")
+        self.textbox_input.grid(
             row=0, column=0, rowspan=6, columnspan=3, padx=20, pady=20, sticky="nsew"
         )
 
         # show output and error messages
         self.textbox_output = CTkTextbox(
-            master=self, height=100, fg_color="#2e2e2e", state="disabled"
+            self, height=100, fg_color="#2e2e2e", state="disabled"
         )
         self.textbox_output.grid(
             row=6, column=0, columnspan=3, padx=20, pady=(0, 20), sticky="nsew"
@@ -48,32 +49,58 @@ class Main(Tk):
         self.label_logo.grid(row=0, column=4, padx=(0, 20), pady=20, sticky="n")
 
         # model selector
-        self.option_model = CTkOptionMenu(self, values=["model1", "model2"])
+        self.option_model = CTkOptionMenu(self, values=["k2t-base", "model2"])
         self.option_model.grid(row=1, column=4, padx=(0, 20), pady=20, sticky="")
 
-        # reset button
-        self.button_reset = CTkButton(self, text="Reset", command=self.button_callback)
-        self.button_reset.grid(row=2, column=4, padx=(0, 20), pady=20, sticky="")
+        # markdup language editor table selector
+        self.option_lang = CTkOptionMenu(self, values=["Markdown", "LaTeX", "HTML"])
+        self.option_lang.grid(row=2, column=4, padx=(0, 20), pady=(10, 20), sticky="")
 
         # import table button
-        self.check_import = CTkCheckBox(
+        self.button_import = CTkButton(
             self, text="Import table", command=self.button_callback
         )
-        self.check_import.grid(row=3, column=4, padx=(0, 20), pady=(20, 10), sticky="")
+        self.button_import.grid(row=3, column=4, padx=(0, 20), pady=(20, 10), sticky="")
 
-        # textual editor table button
-        self.check_editor = CTkCheckBox(
-            self, height=10, text="Table editor", command=self.button_callback
+        # reset button
+        self.button_reset = CTkButton(
+            self, text="Reset", command=self.reset_input_output
         )
-        self.check_editor.grid(row=4, column=4, padx=(0, 20), pady=(10, 20), sticky="")
+        self.button_reset.grid(row=4, column=4, padx=(0, 20), pady=20, sticky="")
 
         # go button
         self.button_start = CTkButton(
-            master=self, text="GO", command=self.button_callback
+            master=self, text="GO", command=self.convert_to_description
         )
         self.button_start.grid(
             row=6, column=4, padx=(0, 20), pady=(0, 20), sticky="nsew"
         )
+
+    def reset_input_output(self):
+        self.textbox_input.delete("0.0", "end")
+        self.textbox_output.delete("0.0", "end")
+
+    def convert_to_description(self):
+        # get text from textbox_input
+        text_in = self.textbox_input.get("0.0", "end")
+
+        # tokenize text according to selected language
+        keywords = []
+        if self.option_lang.get() == "Markdown":
+            keywords = Tokenizer.tokenize_markdown_table(text_in)
+        if self.option_lang.get() == "LaTeX":
+            keywords = Tokenizer.tokenize_latex_table(text_in)
+        if self.option_lang.get() == "HTML":
+            keywords = Tokenizer.tokenize_html_table(text_in)
+
+        # call selected model to generate description
+        description = ""
+        if self.option_model.get() == "k2t-base":
+            description = ModelSelector.keywordtotext(keywords)
+
+        # display output
+        self.textbox_output.delete("0.0", "end")
+        self.textbox_output.insert("0.0", description)
 
     def show_splash_screen(self):
         self.splash_frame = CTkFrame(master=self, fg_color="#222222")
