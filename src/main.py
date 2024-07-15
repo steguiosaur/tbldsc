@@ -33,9 +33,7 @@ class Main(Tk):
         )
 
         # show output and error messages
-        self.textbox_output = CTkTextbox(
-            self, height=100, fg_color="#2e2e2e", state="disabled"
-        )
+        self.textbox_output = CTkTextbox(self, height=100, fg_color="#2e2e2e")
         self.textbox_output.grid(
             row=6, column=0, columnspan=3, padx=20, pady=(0, 20), sticky="nsew"
         )
