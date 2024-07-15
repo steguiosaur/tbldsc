@@ -96,6 +96,7 @@ class Main(Tk):
         description = "some text"
         if self.option_model.get() == "k2t-base":
             description = ModelSelector.keywordtotext(keywords)
+        print(description)
 
         # display output
         self.textbox_output.delete("1.0", "end")
