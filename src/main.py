@@ -13,6 +13,7 @@ from customtkinter import (
 )
 from utils.pathing import Pathing
 from preprocess.tokenizer import Tokenizer
+
 from models.modelselector import ModelSelector
 
 
@@ -94,13 +95,13 @@ class Main(Tk):
             keywords = Tokenizer.tokenize_html_table(text_in)
 
         # call selected model to generate description
-        description = ""
+        description = "some text"
         if self.option_model.get() == "k2t-base":
             description = ModelSelector.keywordtotext(keywords)
 
         # display output
-        self.textbox_output.delete("0.0", "end")
-        self.textbox_output.insert("0.0", description)
+        self.textbox_output.delete("1.0", "end")
+        self.textbox_output.insert("1.0", description)
 
     def show_splash_screen(self):
         self.splash_frame = CTkFrame(master=self, fg_color="#222222")
